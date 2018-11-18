@@ -20,25 +20,20 @@ export default (state = [], action) => {
             }
           : team;
       });
-    // Similar to above but more granular.
-    case "UPDATE_TEAM_POINTS":
+
+    // Update final metrics on team, then sort by ranking
+    case "UPDATE_TEAM_METRICS":
       return state.map(team => {
         return team.key === action.key
           ? {
               ...team,
-              points: action.points
+              points: action.points,
+              goalDifference: action.goalDifference,
+              rank: action.rank
             }
           : team;
       });
-    case "UPDATE_TEAM_GOAL_DIFFERENCE":
-      return state.map(team => {
-        return team.key === action.key
-          ? {
-              ...team,
-              goalDifference: action.goalDifference
-            }
-          : team;
-      });
+
     // Should the team not exist, we initialize it in to the store and set some base values.
     case "ADD_TEAM":
       return state.some(({ key }) => key === action.key)
@@ -59,6 +54,17 @@ export default (state = [], action) => {
               points: 0
             }
           ];
+
+    // A simply order by reducer which allows for a specified property to order by.
+    case "ORDER_BY":
+      const prop = action.property;
+      return action.descending
+        ? state.sort((a, b) => b[prop] - a[prop])
+        : state.sort((a, b) => a[prop] - b[prop]);
+
+    case "CLEAR_DATA":
+      return [];
+
     default:
       return state;
   }
