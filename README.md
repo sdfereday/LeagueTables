@@ -1,2 +1,0 @@
-# LeagueTables
-Created with CodeSandbox
