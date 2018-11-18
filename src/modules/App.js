@@ -3,7 +3,8 @@ import compose from "recompact/compose";
 import withState from "recompact/withState";
 import withHandlers from "recompact/withHandlers";
 import Textarea from "../components/textarea/Hoc";
-import parseRoundData from "../calculation/rounds";
+import createRoundData from "../data/createRoundData";
+import visualizeRoundData from "../data/visualizeRoundData";
 
 /* General HTML layout of this particular component. Since it's quite customized and
 made from multiple parts, it felt more appropriate to name it a module.
@@ -51,7 +52,7 @@ const AppTemplate = ({
               <th>Defeats</th>
               <th>Goals For</th>
               <th>Goals Against</th>
-              <th>Goals Difference</th>
+              <th>Goal Difference</th>
               <th>Points</th>
             </tr>
           </thead>
@@ -112,16 +113,25 @@ export default compose(
       const { name, rounds } = inputData;
 
       if (name) {
+        // Make use of the table name for clarification.
         setTableName(name);
       }
 
       if (rounds) {
-        // ParseRoundData does the legwork here (see 'calculation' directory).
-        const parsedRounds = parseRoundData(rounds);
-        setRounds(parsedRounds);
-        // Stringified to allow data to be formatted nicely and appear in a textarea for copying.
+        // Create the core data from the JSON provided.
+        const roundData = createRoundData(rounds);
+
+        // Export the data given to a visual table.
+        const exportedRounds = visualizeRoundData(roundData);
+
+        console.log(exportedRounds);
+
+        // Set the data so we can use React to generate a visual table.
+        setRounds(exportedRounds);
+
+        // Stringify the data and format it nicely so we can copy and paste it from a textarea.
         setExportedData(
-          parsedRounds ? JSON.stringify(parsedRounds, null, 2) : []
+          exportedRounds ? JSON.stringify(exportedRounds, null, 2) : []
         );
       }
     }
